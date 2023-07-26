@@ -48,6 +48,33 @@ export default function Home() {
     };
   }, []);
 
+  function moveEnemy(hPosition: Position, ePosition: Position) {
+    if (ePosition.x !== 8) {
+      const xDiff: number = ePosition.x - hPosition.x;
+      const yDiff: number = ePosition.y - hPosition.y;
+      if (Math.abs(xDiff) >= Math.abs(yDiff)) {
+        setStage([
+          { newStage: "grass", x: ePosition.x, y: ePosition.y },
+          {
+            newStage: "enemy",
+            x: xDiff > 0 ? ePosition.x - 1 : ePosition.x + 1,
+            y: ePosition.y,
+          },
+        ]);
+      }
+      if (Math.abs(xDiff) < Math.abs(yDiff)) {
+        setStage([
+          { newStage: "grass", x: ePosition.x, y: ePosition.y },
+          {
+            newStage: "enemy",
+            x: ePosition.x,
+            y: yDiff > 0 ? ePosition.y - 1 : ePosition.y + 1,
+          },
+        ]);
+      }
+    }
+  }
+
   function find(input: Stage) {
     for (let i = 0; i < playingField.length; i++) {
       for (let j = 0; j < playingField[i].length; j++) {
@@ -125,6 +152,7 @@ export default function Home() {
           { newStage: "hero", x: hPosition.x, y: hPosition.y - 1 },
         ]);
         setMoveCount((prevCount) => prevCount + 1);
+        moveEnemy(hPosition, ePosition);
       }
     }
     if (e.key === "a") {
@@ -136,6 +164,7 @@ export default function Home() {
           { newStage: "hero", x: hPosition.x - 1, y: hPosition.y },
         ]);
         setMoveCount((prevCount) => prevCount + 1);
+        moveEnemy(hPosition, ePosition);
       }
     }
     if (e.key === "s") {
@@ -147,6 +176,7 @@ export default function Home() {
           { newStage: "hero", x: hPosition.x, y: hPosition.y + 1 },
         ]);
         setMoveCount((prevCount) => prevCount + 1);
+        moveEnemy(hPosition, ePosition);
       }
     }
     if (e.key === "d") {
@@ -159,6 +189,7 @@ export default function Home() {
           { newStage: "hero", x: hPosition.x + 1, y: hPosition.y },
         ]);
         setMoveCount((prevCount) => prevCount + 1);
+        moveEnemy(hPosition, ePosition);
       }
     }
   }
