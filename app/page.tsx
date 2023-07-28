@@ -10,7 +10,7 @@ type SetStageInput = {
   y: number;
 };
 
-type Stage = "grass" | "hero" | "enemy";
+type Stage = "grass" | "hero" | "enemy" | "teleport";
 
 type Position = { x: number; y: number };
 
@@ -80,7 +80,7 @@ export default function Home() {
           {
             newStage: "enemy",
             x:
-              randomNumber < 0.5
+              randomNumber <= 0.5
                 ? ePosition.x
                 : xDiff > 0
                 ? ePosition.x - 1
@@ -110,10 +110,38 @@ export default function Home() {
 
   const [moveCount, setMoveCount] = useState(0);
 
+  function checkTeleportPositions(hPosition: Position, ePosition: Position) {
+    if (
+      (hPosition.x === 5 && hPosition.y === 1) ||
+      (hPosition.x === 1 && hPosition.y === 5)
+    ) {
+      return false;
+    } else if (
+      (ePosition.x === 5 && ePosition.y === 1) ||
+      (ePosition.x === 1 && ePosition.y === 5)
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   useEffect(() => {
-    console.log({ moveCount });
     if (moveCount === 3) {
       return setStage([{ newStage: "enemy", x: 6, y: 3 }]);
+    }
+    if (moveCount === 7) {
+      const hPosition = find("hero");
+      const ePosition = find("enemy");
+
+      if (checkTeleportPositions(hPosition, ePosition)) {
+        return setStage([
+          { newStage: "teleport", x: 5, y: 1 },
+          { newStage: "teleport", x: 1, y: 5 },
+        ]);
+      } else {
+        setMoveCount((prevCount) => prevCount - 1);
+      }
     }
   }, [moveCount]);
 
