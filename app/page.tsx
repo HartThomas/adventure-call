@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import PlayingField from "./components/PlayingField";
 import { Tile } from "./types/tile";
+import { getRandomValues } from "crypto";
 
 type SetStageInput = {
   newStage: Stage;
@@ -52,7 +53,7 @@ export default function Home() {
     if (ePosition.x !== 8) {
       const xDiff: number = ePosition.x - hPosition.x;
       const yDiff: number = ePosition.y - hPosition.y;
-      if (Math.abs(xDiff) >= Math.abs(yDiff)) {
+      if (Math.abs(xDiff) > Math.abs(yDiff)) {
         setStage([
           { newStage: "grass", x: ePosition.x, y: ePosition.y },
           {
@@ -69,6 +70,27 @@ export default function Home() {
             newStage: "enemy",
             x: ePosition.x,
             y: yDiff > 0 ? ePosition.y - 1 : ePosition.y + 1,
+          },
+        ]);
+      }
+      if (Math.abs(xDiff) === Math.abs(yDiff)) {
+        const randomNumber = Math.random();
+        setStage([
+          { newStage: "grass", x: ePosition.x, y: ePosition.y },
+          {
+            newStage: "enemy",
+            x:
+              randomNumber < 0.5
+                ? ePosition.x
+                : xDiff > 0
+                ? ePosition.x - 1
+                : ePosition.x + 1,
+            y:
+              randomNumber > 0.5
+                ? ePosition.y
+                : yDiff > 0
+                ? ePosition.y - 1
+                : ePosition.y + 1,
           },
         ]);
       }
