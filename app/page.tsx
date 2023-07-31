@@ -54,45 +54,115 @@ export default function Home() {
       const xDiff: number = ePosition.x - hPosition.x;
       const yDiff: number = ePosition.y - hPosition.y;
       if (Math.abs(xDiff) > Math.abs(yDiff)) {
-        setStage([
-          { newStage: "grass", x: ePosition.x, y: ePosition.y },
-          {
-            newStage: "enemy",
-            x: xDiff > 0 ? ePosition.x - 1 : ePosition.x + 1,
-            y: ePosition.y,
-          },
-        ]);
+        const nextTile: Tile = look({
+          x: xDiff > 0 ? ePosition.x - 1 : ePosition.x + 1,
+          y: ePosition.y,
+        });
+        if (nextTile.stage === "teleport") {
+          setStage([
+            { newStage: "grass", x: ePosition.x, y: ePosition.y },
+            {
+              newStage: "grass",
+              x: nextTile.x === 5 ? 1 : 5,
+              y: nextTile.y === 5 ? 1 : 5,
+            },
+            {
+              newStage: "enemy",
+              x: nextTile.x === 5 ? 5 : 1,
+              y: nextTile.y === 5 ? 5 : 1,
+            },
+          ]);
+        } else {
+          setStage([
+            { newStage: "grass", x: ePosition.x, y: ePosition.y },
+            {
+              newStage: "enemy",
+              x: xDiff > 0 ? ePosition.x - 1 : ePosition.x + 1,
+              y: ePosition.y,
+            },
+          ]);
+        }
       }
       if (Math.abs(xDiff) < Math.abs(yDiff)) {
-        setStage([
-          { newStage: "grass", x: ePosition.x, y: ePosition.y },
-          {
-            newStage: "enemy",
-            x: ePosition.x,
-            y: yDiff > 0 ? ePosition.y - 1 : ePosition.y + 1,
-          },
-        ]);
+        const nextTile: Tile = look({
+          x: ePosition.x,
+          y: yDiff > 0 ? ePosition.y - 1 : ePosition.y + 1,
+        });
+        if (nextTile.stage === "teleport") {
+          setStage([
+            { newStage: "grass", x: ePosition.x, y: ePosition.y },
+            {
+              newStage: "grass",
+              x: nextTile.x === 5 ? 1 : 5,
+              y: nextTile.y === 5 ? 1 : 5,
+            },
+            {
+              newStage: "enemy",
+              x: nextTile.x === 5 ? 5 : 1,
+              y: nextTile.y === 5 ? 5 : 1,
+            },
+          ]);
+        } else {
+          setStage([
+            { newStage: "grass", x: ePosition.x, y: ePosition.y },
+            {
+              newStage: "enemy",
+              x: ePosition.x,
+              y: yDiff > 0 ? ePosition.y - 1 : ePosition.y + 1,
+            },
+          ]);
+        }
       }
       if (Math.abs(xDiff) === Math.abs(yDiff)) {
         const randomNumber = Math.random();
-        setStage([
-          { newStage: "grass", x: ePosition.x, y: ePosition.y },
-          {
-            newStage: "enemy",
-            x:
-              randomNumber <= 0.5
-                ? ePosition.x
-                : xDiff > 0
-                ? ePosition.x - 1
-                : ePosition.x + 1,
-            y:
-              randomNumber > 0.5
-                ? ePosition.y
-                : yDiff > 0
-                ? ePosition.y - 1
-                : ePosition.y + 1,
-          },
-        ]);
+        const nextTile: Tile = look({
+          x:
+            randomNumber <= 0.5
+              ? ePosition.x
+              : xDiff > 0
+              ? ePosition.x - 1
+              : ePosition.x + 1,
+          y:
+            randomNumber > 0.5
+              ? ePosition.y
+              : yDiff > 0
+              ? ePosition.y - 1
+              : ePosition.y + 1,
+        });
+        if (nextTile.stage === "teleport") {
+          setStage([
+            { newStage: "grass", x: ePosition.x, y: ePosition.y },
+            {
+              newStage: "grass",
+              x: nextTile.x === 5 ? 1 : 5,
+              y: nextTile.y === 5 ? 1 : 5,
+            },
+            {
+              newStage: "enemy",
+              x: nextTile.x === 5 ? 5 : 1,
+              y: nextTile.y === 5 ? 5 : 1,
+            },
+          ]);
+        } else {
+          setStage([
+            { newStage: "grass", x: ePosition.x, y: ePosition.y },
+            {
+              newStage: "enemy",
+              x:
+                randomNumber <= 0.5
+                  ? ePosition.x
+                  : xDiff > 0
+                  ? ePosition.x - 1
+                  : ePosition.x + 1,
+              y:
+                randomNumber > 0.5
+                  ? ePosition.y
+                  : yDiff > 0
+                  ? ePosition.y - 1
+                  : ePosition.y + 1,
+            },
+          ]);
+        }
       }
     }
   }
@@ -134,7 +204,7 @@ export default function Home() {
     if (moveCount === 3) {
       return setStage([{ newStage: "enemy", x: 6, y: 3 }]);
     }
-    if (moveCount === 7) {
+    if (moveCount % 7 === 0 && moveCount !== 0) {
       const hPosition = find("hero");
       const ePosition = find("enemy");
 
@@ -184,7 +254,7 @@ export default function Home() {
     if (e.key === "w") {
       const hPosition = find("hero");
       const ePosition = find("enemy");
-      const nextTile = look({ x: hPosition.x, y: hPosition.y - 1 });
+      const nextTile: Tile = look({ x: hPosition.x, y: hPosition.y - 1 });
       if (hPosition.y !== 0 && comparePositions(hPosition, ePosition, e.key)) {
         if (nextTile.stage === "teleport") {
           setStage([
@@ -272,7 +342,7 @@ export default function Home() {
       const hPosition = find("hero");
       const ePosition = find("enemy");
 
-      const nextTile = look({ x: hPosition.x - 1, y: hPosition.y });
+      const nextTile = look({ x: hPosition.x + 1, y: hPosition.y });
       if (hPosition.x !== 6 && comparePositions(hPosition, ePosition, e.key)) {
         if (nextTile.stage === "teleport") {
           setStage([
