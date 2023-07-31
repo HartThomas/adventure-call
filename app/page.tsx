@@ -108,6 +108,10 @@ export default function Home() {
     return { x: 8, y: 8 };
   }
 
+  function look(input: Position) {
+    return playingField[input.x][input.y];
+  }
+
   const [moveCount, setMoveCount] = useState(0);
 
   function checkTeleportPositions(hPosition: Position, ePosition: Position) {
@@ -180,11 +184,28 @@ export default function Home() {
     if (e.key === "w") {
       const hPosition = find("hero");
       const ePosition = find("enemy");
+      const nextTile = look({ x: hPosition.x, y: hPosition.y - 1 });
       if (hPosition.y !== 0 && comparePositions(hPosition, ePosition, e.key)) {
-        setStage([
-          { newStage: "grass", x: hPosition.x, y: hPosition.y },
-          { newStage: "hero", x: hPosition.x, y: hPosition.y - 1 },
-        ]);
+        if (nextTile.stage === "teleport") {
+          setStage([
+            { newStage: "grass", x: hPosition.x, y: hPosition.y },
+            {
+              newStage: "grass",
+              x: nextTile.x === 5 ? 1 : 5,
+              y: nextTile.y === 5 ? 1 : 5,
+            },
+            {
+              newStage: "hero",
+              x: nextTile.x === 5 ? 5 : 1,
+              y: nextTile.y === 5 ? 5 : 1,
+            },
+          ]);
+        } else {
+          setStage([
+            { newStage: "grass", x: hPosition.x, y: hPosition.y },
+            { newStage: "hero", x: hPosition.x, y: hPosition.y - 1 },
+          ]);
+        }
         setMoveCount((prevCount) => prevCount + 1);
         moveEnemy(hPosition, ePosition);
       }
@@ -192,11 +213,28 @@ export default function Home() {
     if (e.key === "a") {
       const hPosition = find("hero");
       const ePosition = find("enemy");
+      const nextTile = look({ x: hPosition.x - 1, y: hPosition.y });
       if (hPosition.x !== 0 && comparePositions(hPosition, ePosition, e.key)) {
-        setStage([
-          { newStage: "grass", x: hPosition.x, y: hPosition.y },
-          { newStage: "hero", x: hPosition.x - 1, y: hPosition.y },
-        ]);
+        if (nextTile.stage === "teleport") {
+          setStage([
+            { newStage: "grass", x: hPosition.x, y: hPosition.y },
+            {
+              newStage: "grass",
+              x: nextTile.x === 5 ? 1 : 5,
+              y: nextTile.y === 5 ? 1 : 5,
+            },
+            {
+              newStage: "hero",
+              x: nextTile.x === 5 ? 5 : 1,
+              y: nextTile.y === 5 ? 5 : 1,
+            },
+          ]);
+        } else {
+          setStage([
+            { newStage: "grass", x: hPosition.x, y: hPosition.y },
+            { newStage: "hero", x: hPosition.x - 1, y: hPosition.y },
+          ]);
+        }
         setMoveCount((prevCount) => prevCount + 1);
         moveEnemy(hPosition, ePosition);
       }
@@ -204,11 +242,28 @@ export default function Home() {
     if (e.key === "s") {
       const hPosition = find("hero");
       const ePosition = find("enemy");
+      const nextTile = look({ x: hPosition.x, y: hPosition.y + 1 });
       if (hPosition.y !== 6 && comparePositions(hPosition, ePosition, e.key)) {
-        setStage([
-          { newStage: "grass", x: hPosition.x, y: hPosition.y },
-          { newStage: "hero", x: hPosition.x, y: hPosition.y + 1 },
-        ]);
+        if (nextTile.stage === "teleport") {
+          setStage([
+            { newStage: "grass", x: hPosition.x, y: hPosition.y },
+            {
+              newStage: "grass",
+              x: nextTile.x === 5 ? 1 : 5,
+              y: nextTile.y === 5 ? 1 : 5,
+            },
+            {
+              newStage: "hero",
+              x: nextTile.x === 5 ? 5 : 1,
+              y: nextTile.y === 5 ? 5 : 1,
+            },
+          ]);
+        } else {
+          setStage([
+            { newStage: "grass", x: hPosition.x, y: hPosition.y },
+            { newStage: "hero", x: hPosition.x, y: hPosition.y + 1 },
+          ]);
+        }
         setMoveCount((prevCount) => prevCount + 1);
         moveEnemy(hPosition, ePosition);
       }
@@ -217,11 +272,28 @@ export default function Home() {
       const hPosition = find("hero");
       const ePosition = find("enemy");
 
+      const nextTile = look({ x: hPosition.x - 1, y: hPosition.y });
       if (hPosition.x !== 6 && comparePositions(hPosition, ePosition, e.key)) {
-        setStage([
-          { newStage: "grass", x: hPosition.x, y: hPosition.y },
-          { newStage: "hero", x: hPosition.x + 1, y: hPosition.y },
-        ]);
+        if (nextTile.stage === "teleport") {
+          setStage([
+            { newStage: "grass", x: hPosition.x, y: hPosition.y },
+            {
+              newStage: "grass",
+              x: nextTile.x === 5 ? 1 : 5,
+              y: nextTile.y === 5 ? 1 : 5,
+            },
+            {
+              newStage: "hero",
+              x: nextTile.x === 5 ? 5 : 1,
+              y: nextTile.y === 5 ? 5 : 1,
+            },
+          ]);
+        } else {
+          setStage([
+            { newStage: "grass", x: hPosition.x, y: hPosition.y },
+            { newStage: "hero", x: hPosition.x + 1, y: hPosition.y },
+          ]);
+        }
         setMoveCount((prevCount) => prevCount + 1);
         moveEnemy(hPosition, ePosition);
       }
