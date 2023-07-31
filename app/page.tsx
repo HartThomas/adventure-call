@@ -151,44 +151,28 @@ export default function Home() {
     key: String
   ) {
     if (key === "d") {
-      if (
+      return !(
         firstPosition.y === secondPosition.y &&
         firstPosition.x + 1 === secondPosition.x
-      ) {
-        return false;
-      } else {
-        return true;
-      }
+      );
     }
     if (key === "s") {
-      if (
+      return !(
         firstPosition.y + 1 === secondPosition.y &&
         firstPosition.x === secondPosition.x
-      ) {
-        return false;
-      } else {
-        return true;
-      }
+      );
     }
     if (key === "a") {
-      if (
+      return !(
         firstPosition.y === secondPosition.y &&
         firstPosition.x - 1 === secondPosition.x
-      ) {
-        return false;
-      } else {
-        return true;
-      }
+      );
     }
     if (key === "w") {
-      if (
+      return !(
         firstPosition.y - 1 === secondPosition.y &&
         firstPosition.x === secondPosition.x
-      ) {
-        return false;
-      } else {
-        return true;
-      }
+      );
     }
   }
 
