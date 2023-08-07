@@ -29,6 +29,8 @@ export default function Home() {
   }
 
   const [playingField, setPlayingField] = useState(field);
+  const [showEnemyTooltip, setShowEnemyTooltip] = useState(false);
+  const [showTeleportTooltip, setShowTeleportTooltip] = useState(false);
 
   const setStage = (value: Array<SetStageInput>) => {
     const newPlayingField = [...playingField];
@@ -202,6 +204,7 @@ export default function Home() {
 
   useEffect(() => {
     if (moveCount === 3) {
+      setShowEnemyTooltip(!showEnemyTooltip);
       return setStage([{ newStage: "enemy", x: 6, y: 3 }]);
     }
     if (moveCount % 7 === 0 && moveCount !== 0) {
@@ -209,6 +212,7 @@ export default function Home() {
       const ePosition = find("enemy");
 
       if (checkTeleportPositions(hPosition, ePosition)) {
+        setShowTeleportTooltip(true);
         return setStage([
           { newStage: "teleport", x: 5, y: 1 },
           { newStage: "teleport", x: 1, y: 5 },
@@ -371,18 +375,31 @@ export default function Home() {
   }
 
   return (
-    <main className="flex justify-center items-center pt-20">
+    <main className="flex justify-left pl-20 pt-20 ">
       <div className="w-[600px] justify-center items-center text-center">
         <PlayingField playingField={playingField} />
       </div>
-      <button
-        name="hero"
-        onClick={() => {
-          setStage([{ newStage: "hero", x: 3, y: 3 }]);
-        }}
-      >
-        H is for Hero
-      </button>
+      <div className="flex flex-col justify-left w-max">
+        <button
+          name="hero"
+          onClick={() => {
+            setStage([{ newStage: "hero", x: 3, y: 3 }]);
+          }}
+          className="p-5 ml-2 bg-yellow-200 rounded-lg shadow-md border-gray-200 border border-4 text-orange-900 text-4xl font-mono w-fit h-20"
+        >
+          H is for Hero
+        </button>
+        {showEnemyTooltip ? (
+          <div className="p-5 m-2 bg-yellow-200 rounded-lg shadow-md border-gray-200 border border-4 text-orange-900 text-4xl font-mono w-fit h-20">
+            E is for Enemy
+          </div>
+        ) : null}
+        {showTeleportTooltip ? (
+          <div className="p-5 m-2 bg-yellow-200 rounded-lg shadow-md border-gray-200 border border-4 text-orange-900 text-4xl font-mono animate-spin w-fit h-20">
+            T is for Teleport
+          </div>
+        ) : null}
+      </div>
     </main>
   );
 }
