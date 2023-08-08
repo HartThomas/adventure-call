@@ -31,6 +31,7 @@ export default function Home() {
   const [playingField, setPlayingField] = useState(field);
   const [showEnemyTooltip, setShowEnemyTooltip] = useState(false);
   const [showTeleportTooltip, setShowTeleportTooltip] = useState(false);
+  const [canSpawnTeleport, setCanSpawnTeleport] = useState(true);
 
   const setStage = (value: Array<SetStageInput>) => {
     const newPlayingField = [...playingField];
@@ -61,17 +62,18 @@ export default function Home() {
           y: ePosition.y,
         });
         if (nextTile.stage === "teleport") {
+          setCanSpawnTeleport((prevBool) => !prevBool);
           setStage([
             { newStage: "grass", x: ePosition.x, y: ePosition.y },
             {
               newStage: "grass",
-              x: nextTile.x === 5 ? 1 : 5,
-              y: nextTile.y === 5 ? 1 : 5,
+              x: nextTile.y,
+              y: nextTile.x,
             },
             {
               newStage: "enemy",
-              x: nextTile.x === 5 ? 5 : 1,
-              y: nextTile.y === 5 ? 5 : 1,
+              x: nextTile.x,
+              y: nextTile.y,
             },
           ]);
         } else {
@@ -91,17 +93,18 @@ export default function Home() {
           y: yDiff > 0 ? ePosition.y - 1 : ePosition.y + 1,
         });
         if (nextTile.stage === "teleport") {
+          setCanSpawnTeleport((prevBool) => !prevBool);
           setStage([
             { newStage: "grass", x: ePosition.x, y: ePosition.y },
             {
               newStage: "grass",
-              x: nextTile.x === 5 ? 1 : 5,
-              y: nextTile.y === 5 ? 1 : 5,
+              x: nextTile.y,
+              y: nextTile.x,
             },
             {
               newStage: "enemy",
-              x: nextTile.x === 5 ? 5 : 1,
-              y: nextTile.y === 5 ? 5 : 1,
+              x: nextTile.x,
+              y: nextTile.y,
             },
           ]);
         } else {
@@ -132,17 +135,18 @@ export default function Home() {
               : ePosition.y + 1,
         });
         if (nextTile.stage === "teleport") {
+          setCanSpawnTeleport((prevBool) => !prevBool);
           setStage([
             { newStage: "grass", x: ePosition.x, y: ePosition.y },
             {
               newStage: "grass",
-              x: nextTile.x === 5 ? 1 : 5,
-              y: nextTile.y === 5 ? 1 : 5,
+              x: nextTile.y,
+              y: nextTile.x,
             },
             {
               newStage: "enemy",
-              x: nextTile.x === 5 ? 5 : 1,
-              y: nextTile.y === 5 ? 5 : 1,
+              x: nextTile.x,
+              y: nextTile.y,
             },
           ]);
         } else {
@@ -186,15 +190,23 @@ export default function Home() {
 
   const [moveCount, setMoveCount] = useState(0);
 
-  function checkTeleportPositions(hPosition: Position, ePosition: Position) {
+  function checkTeleportPositions(
+    hPosition: Position,
+    ePosition: Position,
+    potentialTeleportTile: Position
+  ) {
     if (
-      (hPosition.x === 5 && hPosition.y === 1) ||
-      (hPosition.x === 1 && hPosition.y === 5)
+      (hPosition.x === potentialTeleportTile.x &&
+        hPosition.y === potentialTeleportTile.y) ||
+      (hPosition.x === potentialTeleportTile.y &&
+        hPosition.y === potentialTeleportTile.x)
     ) {
       return false;
     } else if (
-      (ePosition.x === 5 && ePosition.y === 1) ||
-      (ePosition.x === 1 && ePosition.y === 5)
+      (ePosition.x === potentialTeleportTile.x &&
+        ePosition.y === potentialTeleportTile.y) ||
+      (ePosition.x === potentialTeleportTile.y &&
+        ePosition.y === potentialTeleportTile.x)
     ) {
       return false;
     } else {
@@ -210,12 +222,39 @@ export default function Home() {
     if (moveCount % 7 === 0 && moveCount !== 0) {
       const hPosition = find("hero");
       const ePosition = find("enemy");
+      const potentialTeleportTile: Position = {
+        x: Math.floor(Math.random() * 7),
+        y: Math.floor(Math.random() * 7),
+      };
+      if (potentialTeleportTile.x === potentialTeleportTile.y) {
+        const newRandomNumber = Math.random();
+        potentialTeleportTile.x =
+          newRandomNumber >= 0.5
+            ? potentialTeleportTile.x
+            : potentialTeleportTile.x + 1;
+        potentialTeleportTile.y =
+          newRandomNumber < 0.5
+            ? potentialTeleportTile.y
+            : potentialTeleportTile.y + 1;
+      }
 
-      if (checkTeleportPositions(hPosition, ePosition)) {
+      if (
+        checkTeleportPositions(hPosition, ePosition, potentialTeleportTile) &&
+        canSpawnTeleport
+      ) {
         setShowTeleportTooltip(true);
+        setCanSpawnTeleport((prevBool) => !prevBool);
         return setStage([
-          { newStage: "teleport", x: 5, y: 1 },
-          { newStage: "teleport", x: 1, y: 5 },
+          {
+            newStage: "teleport",
+            x: potentialTeleportTile.x,
+            y: potentialTeleportTile.y,
+          },
+          {
+            newStage: "teleport",
+            x: potentialTeleportTile.y,
+            y: potentialTeleportTile.x,
+          },
         ]);
       } else {
         setMoveCount((prevCount) => prevCount - 1);
@@ -261,17 +300,18 @@ export default function Home() {
       const nextTile: Tile = look({ x: hPosition.x, y: hPosition.y - 1 });
       if (hPosition.y !== 0 && comparePositions(hPosition, ePosition, e.key)) {
         if (nextTile.stage === "teleport") {
+          setCanSpawnTeleport((prevBool) => !prevBool);
           setStage([
             { newStage: "grass", x: hPosition.x, y: hPosition.y },
             {
               newStage: "grass",
-              x: nextTile.x === 5 ? 1 : 5,
-              y: nextTile.y === 5 ? 1 : 5,
+              x: nextTile.y,
+              y: nextTile.x,
             },
             {
               newStage: "hero",
-              x: nextTile.x === 5 ? 5 : 1,
-              y: nextTile.y === 5 ? 5 : 1,
+              x: nextTile.x,
+              y: nextTile.y,
             },
           ]);
         } else {
@@ -294,15 +334,16 @@ export default function Home() {
             { newStage: "grass", x: hPosition.x, y: hPosition.y },
             {
               newStage: "grass",
-              x: nextTile.x === 5 ? 1 : 5,
-              y: nextTile.y === 5 ? 1 : 5,
+              x: nextTile.y,
+              y: nextTile.x,
             },
             {
               newStage: "hero",
-              x: nextTile.x === 5 ? 5 : 1,
-              y: nextTile.y === 5 ? 5 : 1,
+              x: nextTile.x,
+              y: nextTile.y,
             },
           ]);
+          setCanSpawnTeleport((prevBool) => !prevBool);
         } else {
           setStage([
             { newStage: "grass", x: hPosition.x, y: hPosition.y },
@@ -319,17 +360,18 @@ export default function Home() {
       const nextTile = look({ x: hPosition.x, y: hPosition.y + 1 });
       if (hPosition.y !== 6 && comparePositions(hPosition, ePosition, e.key)) {
         if (nextTile.stage === "teleport") {
+          setCanSpawnTeleport((prevBool) => !prevBool);
           setStage([
             { newStage: "grass", x: hPosition.x, y: hPosition.y },
             {
               newStage: "grass",
-              x: nextTile.x === 5 ? 1 : 5,
-              y: nextTile.y === 5 ? 1 : 5,
+              x: nextTile.y,
+              y: nextTile.x,
             },
             {
               newStage: "hero",
-              x: nextTile.x === 5 ? 5 : 1,
-              y: nextTile.y === 5 ? 5 : 1,
+              x: nextTile.x,
+              y: nextTile.y,
             },
           ]);
         } else {
@@ -349,17 +391,18 @@ export default function Home() {
       const nextTile = look({ x: hPosition.x + 1, y: hPosition.y });
       if (hPosition.x !== 6 && comparePositions(hPosition, ePosition, e.key)) {
         if (nextTile.stage === "teleport") {
+          setCanSpawnTeleport((prevBool) => !prevBool);
           setStage([
             { newStage: "grass", x: hPosition.x, y: hPosition.y },
             {
               newStage: "grass",
-              x: nextTile.x === 5 ? 1 : 5,
-              y: nextTile.y === 5 ? 1 : 5,
+              x: nextTile.y,
+              y: nextTile.x,
             },
             {
               newStage: "hero",
-              x: nextTile.x === 5 ? 5 : 1,
-              y: nextTile.y === 5 ? 5 : 1,
+              x: nextTile.x,
+              y: nextTile.y,
             },
           ]);
         } else {
