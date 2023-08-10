@@ -32,6 +32,7 @@ export default function Home() {
   const [showEnemyTooltip, setShowEnemyTooltip] = useState(false);
   const [showTeleportTooltip, setShowTeleportTooltip] = useState(false);
   const [canSpawnTeleport, setCanSpawnTeleport] = useState(true);
+  const [lifeTotal, setLifeTotal] = useState(3);
 
   const setStage = (value: Array<SetStageInput>) => {
     const newPlayingField = [...playingField];
@@ -52,7 +53,9 @@ export default function Home() {
     };
   }, []);
 
-  function moveEnemy(hPosition: Position, ePosition: Position) {
+  function moveEnemy() {
+    const hPosition: Position = find("hero");
+    const ePosition: Position = find("enemy");
     if (ePosition.x !== 8) {
       const xDiff: number = ePosition.x - hPosition.x;
       const yDiff: number = ePosition.y - hPosition.y;
@@ -61,6 +64,7 @@ export default function Home() {
           x: xDiff > 0 ? ePosition.x - 1 : ePosition.x + 1,
           y: ePosition.y,
         });
+        console.log(nextTile);
         if (nextTile.stage === "teleport") {
           setCanSpawnTeleport((prevBool) => !prevBool);
           setStage([
@@ -76,6 +80,8 @@ export default function Home() {
               y: nextTile.y,
             },
           ]);
+        } else if (nextTile.stage === "hero") {
+          setLifeTotal((lifeTotal) => lifeTotal - 1);
         } else {
           setStage([
             { newStage: "grass", x: ePosition.x, y: ePosition.y },
@@ -92,6 +98,7 @@ export default function Home() {
           x: ePosition.x,
           y: yDiff > 0 ? ePosition.y - 1 : ePosition.y + 1,
         });
+        console.log(nextTile);
         if (nextTile.stage === "teleport") {
           setCanSpawnTeleport((prevBool) => !prevBool);
           setStage([
@@ -107,6 +114,8 @@ export default function Home() {
               y: nextTile.y,
             },
           ]);
+        } else if (nextTile.stage === "hero") {
+          setLifeTotal((lifeTotal) => lifeTotal - 1);
         } else {
           setStage([
             { newStage: "grass", x: ePosition.x, y: ePosition.y },
@@ -134,6 +143,7 @@ export default function Home() {
               ? ePosition.y - 1
               : ePosition.y + 1,
         });
+        console.log(nextTile);
         if (nextTile.stage === "teleport") {
           setCanSpawnTeleport((prevBool) => !prevBool);
           setStage([
@@ -149,6 +159,8 @@ export default function Home() {
               y: nextTile.y,
             },
           ]);
+        } else if (nextTile.stage === "hero") {
+          setLifeTotal((lifeTotal) => lifeTotal - 1);
         } else {
           setStage([
             { newStage: "grass", x: ePosition.x, y: ePosition.y },
@@ -262,6 +274,10 @@ export default function Home() {
     }
   }, [moveCount]);
 
+  function timeout(delay: number) {
+    return new Promise((res) => setTimeout(res, delay));
+  }
+
   function comparePositions( // compares movement(key) from first position to second
     firstPosition: Position,
     secondPosition: Position,
@@ -293,7 +309,7 @@ export default function Home() {
     }
   }
 
-  function HandleKeyPress(e: KeyboardEvent) {
+  async function HandleKeyPress(e: KeyboardEvent) {
     if (e.key === "w") {
       const hPosition = find("hero");
       const ePosition = find("enemy");
@@ -321,7 +337,8 @@ export default function Home() {
           ]);
         }
         setMoveCount((prevCount) => prevCount + 1);
-        moveEnemy(hPosition, ePosition);
+        await timeout(500);
+        moveEnemy();
       }
     }
     if (e.key === "a") {
@@ -351,7 +368,8 @@ export default function Home() {
           ]);
         }
         setMoveCount((prevCount) => prevCount + 1);
-        moveEnemy(hPosition, ePosition);
+        await timeout(500);
+        moveEnemy();
       }
     }
     if (e.key === "s") {
@@ -381,7 +399,8 @@ export default function Home() {
           ]);
         }
         setMoveCount((prevCount) => prevCount + 1);
-        moveEnemy(hPosition, ePosition);
+        await timeout(500);
+        moveEnemy();
       }
     }
     if (e.key === "d") {
@@ -412,37 +431,49 @@ export default function Home() {
           ]);
         }
         setMoveCount((prevCount) => prevCount + 1);
-        moveEnemy(hPosition, ePosition);
+        await timeout(500);
+        moveEnemy();
       }
     }
   }
 
   return (
     <main className="flex justify-left pl-20 pt-20 ">
-      <div className="w-[600px] justify-center items-center text-center">
-        <PlayingField playingField={playingField} />
-      </div>
-      <div className="flex flex-col justify-left w-max">
-        <button
-          name="hero"
-          onClick={() => {
-            setStage([{ newStage: "hero", x: 3, y: 3 }]);
-          }}
-          className="p-5 ml-2 bg-yellow-200 rounded-lg shadow-md border-gray-200 border border-4 text-orange-900 text-4xl font-mono w-fit h-20"
-        >
-          H is for Hero
-        </button>
-        {showEnemyTooltip ? (
-          <div className="p-5 m-2 bg-yellow-200 rounded-lg shadow-md border-gray-200 border border-4 text-orange-900 text-4xl font-mono w-fit h-20">
-            E is for Enemy
+      {lifeTotal <= 0 ? (
+        <div className="text-orange-900 text-4xl font-mono">D is for Death</div>
+      ) : (
+        <>
+          <div className="w-[600px] justify-center items-center text-center">
+            <PlayingField playingField={playingField} />
+            <div className="flex pt-10 pl-64">
+              {lifeTotal > 0 ? <p>❤️</p> : null}
+              {lifeTotal > 1 ? <p>❤️</p> : null}
+              {lifeTotal > 2 ? <p>❤️</p> : null}
+            </div>
           </div>
-        ) : null}
-        {showTeleportTooltip ? (
-          <div className="p-5 m-2 bg-yellow-200 rounded-lg shadow-md border-gray-200 border border-4 text-orange-900 text-4xl font-mono animate-spin w-fit h-20">
-            T is for Teleport
-          </div>
-        ) : null}
-      </div>
+          <div className="flex flex-col justify-left w-max">
+            <button
+              name="hero"
+              onClick={() => {
+                setStage([{ newStage: "hero", x: 3, y: 3 }]);
+              }}
+              className="p-5 ml-2 bg-yellow-200 rounded-lg shadow-md border-gray-200 border border-4 text-orange-900 text-4xl font-mono w-fit h-20"
+            >
+              H is for Hero
+            </button>
+            {showEnemyTooltip ? (
+              <div className="p-5 m-2 bg-yellow-200 rounded-lg shadow-md border-gray-200 border border-4 text-orange-900 text-4xl font-mono w-fit h-20">
+                E is for Enemy
+              </div>
+            ) : null}
+            {showTeleportTooltip ? (
+              <div className="p-5 m-2 bg-yellow-200 rounded-lg shadow-md border-gray-200 border border-4 text-orange-900 text-4xl font-mono animate-spin w-fit h-20">
+                T is for Teleport
+              </div>
+            ) : null}
+          </div>{" "}
+        </>
+      )}
     </main>
   );
 }
