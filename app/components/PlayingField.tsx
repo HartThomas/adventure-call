@@ -1,6 +1,5 @@
 import Card from "./Card";
 import { Tile } from "../types/tile";
-import { useEffect } from "react";
 
 export default function PlayingField(props: {
   playingField: Array<Array<Tile>>;

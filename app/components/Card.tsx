@@ -1,4 +1,3 @@
-import { useState, useRef, useEffect } from "react";
 import { Tile } from "../types/tile";
 
 export default function Card(props: Tile) {
@@ -12,7 +11,7 @@ export default function Card(props: Tile) {
     <div
       key={identifier}
       id={identifier}
-      className="border-gray-200 border w-20 border-4 h-20 justify-center items-center flex rounded-lg shadow-md bg-green-100"
+      className={`border-gray-200 border w-20 border-4 h-20 justify-center items-center flex rounded-lg shadow-md bg-green-100`}
     >
       <p
         className={`text-4xl font-mono text-orange-900 ${

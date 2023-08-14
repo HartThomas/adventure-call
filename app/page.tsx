@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import PlayingField from "./components/PlayingField";
 import { Tile } from "./types/tile";
-import { getRandomValues } from "crypto";
 
 type SetStageInput = {
   newStage: Stage;
